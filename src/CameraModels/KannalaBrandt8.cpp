@@ -23,6 +23,8 @@
 
 #include <boost/serialization/export.hpp>
 
+#include <opencv2/calib3d.hpp>
+
 
 namespace MORB_SLAM {
 

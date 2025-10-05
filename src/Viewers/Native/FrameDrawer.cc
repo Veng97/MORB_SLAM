@@ -19,14 +19,16 @@
  * ORB-SLAM3. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "MORB_SLAM/FrameDrawer.h"
-
-#include <mutex>
-#include <opencv2/opencv.hpp>
+#include "MORB_SLAM/Viewers/Native/FrameDrawer.h"
 #include "MORB_SLAM/ImprovedTypes.hpp"
 #include "MORB_SLAM/MapPoint.h"
 #include "MORB_SLAM/Atlas.h"
 #include "MORB_SLAM/Tracking.h"
+
+#include <opencv2/core/core.hpp>
+
+#include <mutex>
+
 
 namespace MORB_SLAM {
 

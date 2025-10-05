@@ -46,13 +46,18 @@ project(MORB_SLAM
 
 
 include(GNUInstallDirs)
-# Set compiler standard to C++20
+
+# Compiler configuration
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
-if( NOT CMAKE_BUILD_TYPE )
-    set(CMAKE_BUILD_TYPE Release)
-ENDIF()
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -gdwarf-4")
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Default to Release if not explicitly set
+if(NOT CMAKE_BUILD_TYPE)
+    message(STATUS "No build type specified; defaulting to Release")
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+endif()
+
+
 # https://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     if(CMAKE_GENERATOR STREQUAL "Ninja")
@@ -99,13 +104,13 @@ set(TARGET_NAME ${PROJECT_NAME})
 
 find_package(Threads REQUIRED)
 find_package(Eigen3 REQUIRED)
-find_package(realsense2 QUIET) # realsense only needed for example
-find_package(Pangolin REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(Boost REQUIRED COMPONENTS serialization regex)
 find_package(Boost REQUIRED)
 find_package(OpenSSL REQUIRED)
+find_package(Pangolin QUIET) # only needed for visualization
 find_package(ixwebsocket QUIET) # only needed for getting realsense data through a websocket
+find_package(realsense2 QUIET) # realsense only needed for example
 
 file(GLOB CPP_FILES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc)
 file(GLOB CPP_OPTIMIZER_FILES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/Optimizer/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/Optimizer/*.cc)
@@ -124,6 +129,43 @@ file(GLOB settings_headers CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/include
 file(GLOB inertial_odometry_headers CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/InertialOdometry/*.h ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/InertialOdometry/*.hpp)
 
 
+# optionally built native viewer
+set(NATIVE_VIEWER_BUILT OFF)
+set(NATIVE_VIEWER_LIBS "")
+set(NATIVE_VIEWER_INCLUDES "")
+if(Pangolin_FOUND)
+    message(STATUS "** Pangolin found, native viewer will be built.")
+    
+    set(NATIVE_VIEWER_BUILT ON)
+
+    file(GLOB CPP_PANGOLIN_VIEWER_FILES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/Viewers/Native/*.cc)
+    list(APPEND CPP_FILES ${CPP_PANGOLIN_VIEWER_FILES})
+    set(NATIVE_VIEWER_LIBS ${Pangolin_LIBRARIES})
+    file(GLOB pangolin_viewer_headers CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/Viewers/Native/*.h)
+    set(NATIVE_VIEWER_INCLUDES ${pangolin_viewer_headers})
+else()
+    message(STATUS "** Pangolin not found, the native viewer will not be built.")
+endif()
+
+# optionally built external viewer
+set(EXTERNAL_VIEWER_BUILT OFF)
+set(EXTERNAL_VIEWER_LIBS "")
+set(EXTERNAL_VIEWER_INCLUDES "")
+if(ixwebsocket_FOUND)
+    message(STATUS "** ixwebsocket found, external viewer will be built.")
+
+    set(EXTERNAL_VIEWER_BUILT ON)
+
+    file(GLOB CPP_EXTERNAL_VIEWER_FILES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/Viewers/External/ExternalMapViewer.cc)
+    list(APPEND CPP_FILES ${CPP_EXTERNAL_VIEWER_FILES})
+    set(EXTERNAL_VIEWER_LIBS ixwebsocket::ixwebsocket)
+    file(GLOB external_viewer_headers CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/Viewers/External/ExternalMapViewer.h)
+    set(EXTERNAL_VIEWER_INCLUDES ${external_viewer_headers})
+else()
+    message(STATUS "** ixwebsocket not found, the external viewer will not be built.")
+endif()
+
+
 add_library(${TARGET_NAME} SHARED ${CPP_FILES})
 add_library(${PROJECT_NAME}::${TARGET_NAME} ALIAS ${TARGET_NAME})
 target_include_directories(${TARGET_NAME} PUBLIC
@@ -138,8 +180,30 @@ target_link_libraries( ${TARGET_NAME} PUBLIC Eigen3::Eigen )
 target_link_libraries( ${TARGET_NAME} PUBLIC Boost::serialization Boost::regex )
 target_link_libraries( ${TARGET_NAME} PUBLIC ${OpenCV_LIBS} )
 target_link_libraries( ${TARGET_NAME} PRIVATE OpenSSL::SSL )
-target_link_libraries( ${TARGET_NAME} PRIVATE ${Pangolin_LIBRARIES} )
-target_link_libraries( ${TARGET_NAME} PRIVATE ixwebsocket::ixwebsocket ) 
+if(NATIVE_VIEWER_LIBS)
+    target_link_libraries( ${TARGET_NAME} PRIVATE ${NATIVE_VIEWER_LIBS} )
+endif()
+if(EXTERNAL_VIEWER_LIBS)
+    target_link_libraries( ${TARGET_NAME} PRIVATE ${EXTERNAL_VIEWER_LIBS} )
+endif()
+
+target_compile_options(${TARGET_NAME} PRIVATE
+    $<$<CONFIG:Debug>:-g -gdwarf-4>
+    $<$<CONFIG:RelWithDebInfo>:-g -gdwarf-4>
+)
+
+target_precompile_headers(${TARGET_NAME} PRIVATE
+    <Eigen/Core>
+    <Eigen/Dense>
+    <Eigen/Sparse>
+    <Eigen/Geometry>
+    <Eigen/StdVector>
+    <opencv2/core/core.hpp>
+    <opencv2/features2d/features2d.hpp>
+    <opencv2/imgproc/imgproc.hpp>
+    <opencv2/calib3d.hpp>
+    <opencv2/highgui/highgui.hpp>
+)
 
 
 # https://cmake.org/cmake/help/latest/guide/importing-exporting/index.html#creating-a-package-version-file
@@ -149,7 +213,6 @@ set_property(TARGET ${TARGET_NAME} PROPERTY VERSION ${MORB_VERSION}) # x.x.x use
 set_property(TARGET ${TARGET_NAME} PROPERTY SOVERSION ${MORB_VERSION_MAJOR}) # ABI/API compatibility at so level must be integer
 set_property(TARGET ${TARGET_NAME} PROPERTY "INTERFACE_${TARGET_NAME}_MAJOR_VERSION" ${MORB_VERSION_MAJOR})
 set_property(TARGET ${TARGET_NAME} APPEND PROPERTY COMPATIBLE_INTERFACE_STRING "${TARGET_NAME}_MAJOR_VERSION")
-
 
 
 set(EXPORT_TARGET_NAME "${TARGET_NAME}Targets")
@@ -170,6 +233,12 @@ install(FILES ${headers} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
 install(FILES ${camera_model_headers} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/CameraModels)
 install(FILES ${settings_headers} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/Settings)
 install(FILES ${inertial_odometry_headers} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/InertialOdometry)
+if(NATIVE_VIEWER_INCLUDES)
+    install(FILES ${NATIVE_VIEWER_INCLUDES} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/Viewer/Native)
+endif()
+if(EXTERNAL_VIEWER_INCLUDES)
+    install(FILES ${EXTERNAL_VIEWER_INCLUDES} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/Viewer/External)
+endif()
 
 
 # generate and install export file
@@ -179,38 +248,34 @@ install(EXPORT ${EXPORT_TARGET_NAME}
         DESTINATION ${CMAKE_PROJECT_CONFIG_INSTALL_DIR}
 )
 
-# # Example stereo inertial realsense
-# if(realsense2_FOUND)
-#   set(TARGET_NAME stereo_inertial_realsense_D435i)
-#   add_executable(${TARGET_NAME} Examples/Stereo-Inertial/stereo_inertial_realsense_D435i.cc)
-#   target_link_libraries( ${TARGET_NAME} PUBLIC ${realsense2_LIBRARY})
-#   target_link_libraries( ${TARGET_NAME} PUBLIC ${PROJECT_NAME}::${PROJECT_NAME} )
-#   target_link_libraries( ${TARGET_NAME} PUBLIC ${PROJECT_NAME}::DBoW2 )
-#   target_link_libraries( ${TARGET_NAME} PUBLIC ${PROJECT_NAME}::g2o )
-#   target_link_libraries( ${TARGET_NAME} PUBLIC ${PROJECT_NAME}::sophus )
-#   target_link_libraries( ${TARGET_NAME} PUBLIC Threads::Threads )
-#   target_link_libraries( ${TARGET_NAME} PUBLIC Eigen3::Eigen )
-#   target_link_libraries( ${TARGET_NAME} PUBLIC Boost::serialization Boost::regex )
-#   target_link_libraries( ${TARGET_NAME} PUBLIC ${OpenCV_LIBS} )
-#   target_link_libraries( ${TARGET_NAME} PUBLIC ${Pangolin_LIBRARIES} )
-#   target_link_libraries(stereo_inertial_realsense_D435i PRIVATE ${PROJECT_NAME})
-# else()
-#   message(STATUS "** Stereo inertial realsense D435i example will not compile because librealsense2 was not found")
-# endif()
 
-if(ixwebsocket_FOUND)
+######################################################################
+#                                                                    #
+#                           EXAMPLES                                 #
+#                                                                    #
+######################################################################
+
+# example stereo inertial realsense through websocket
+if(ixwebsocket_FOUND AND realsense2_FOUND)
     set(TARGET_NAME realsense_websocket_client)
     add_executable(${TARGET_NAME} Examples/Stereo-Inertial/realsense_websocket_client.cpp)
-    target_link_libraries( ${TARGET_NAME} PUBLIC ${PROJECT_NAME}::${PROJECT_NAME} )
+    target_link_libraries( ${TARGET_NAME} PUBLIC ${PROJECT_NAME}::${PROJECT_NAME} ${realsense2_LIBRARY} )
 else()
     message(STATUS "** Realsense websocket client will not compile because ixwebsocket was not found")
 endif()
 
-add_executable(test_stereo_inertial_euroc Testing/Stereo-Inertial/EuRoC/test_stereo_inertial_euroc.cpp)
-target_link_libraries( test_stereo_inertial_euroc PUBLIC ${PROJECT_NAME}::${PROJECT_NAME} )
+# example stereo inertial euroc
+if(NATIVE_VIEWER_BUILT AND EXTERNAL_VIEWER_BUILT)
+    add_executable(test_stereo_inertial_euroc Testing/Stereo-Inertial/EuRoC/test_stereo_inertial_euroc.cpp)
+    target_link_libraries( test_stereo_inertial_euroc PUBLIC ${PROJECT_NAME}::${PROJECT_NAME} )
+endif()
 
-add_executable(test_stereo_inertial_recordings Testing/Stereo-Inertial/Recordings/test_stereo_inertial_recordings.cpp)
-target_link_libraries( test_stereo_inertial_recordings PUBLIC ${PROJECT_NAME}::${PROJECT_NAME} )
+# example stereo inertial recordings
+if(NATIVE_VIEWER_BUILT)    
+    add_executable(test_stereo_inertial_recordings Testing/Stereo-Inertial/Recordings/test_stereo_inertial_recordings.cpp)
+    target_link_libraries( test_stereo_inertial_recordings PUBLIC ${PROJECT_NAME}::${PROJECT_NAME} )
+endif()
+
 
 ######################################################################
 #                                                                    #

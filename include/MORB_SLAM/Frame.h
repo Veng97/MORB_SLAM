@@ -19,8 +19,10 @@
 
 #pragma once
 
-#include <vector>
-#include <map>
+#include "MORB_SLAM/ORBVocabulary.h"
+#include "MORB_SLAM/Converter.h"
+#include "MORB_SLAM/Settings/CameraSettings.hpp"
+#include "MORB_SLAM/Camera.hpp"
 
 #ifdef FactoryEngine
 #include "apps/morb_dbow2/DBoW2/BowVector.h"
@@ -34,15 +36,12 @@
 #include "sophus/se3.hpp"
 #endif
 
-#include "MORB_SLAM/ORBVocabulary.h"
-#include "MORB_SLAM/Converter.h"
-#include "MORB_SLAM/Settings/CameraSettings.hpp"
-#include "MORB_SLAM/Camera.hpp"
-
+#include <opencv2/core/core.hpp>
+#include <Eigen/Core>
 
 #include <mutex>
-#include <opencv2/opencv.hpp>
-#include "Eigen/Core"
+#include <vector>
+#include <map>
 
 
 namespace MORB_SLAM

@@ -29,11 +29,11 @@
 #include <opencv2/core/core.hpp>
 
 #include <MORB_SLAM/System.h>
-#include <MORB_SLAM/Viewer.h>
 #include <MORB_SLAM/Settings/CameraSettings.hpp>
 #include <MORB_SLAM/Settings/SystemSettings.hpp>
 #include <MORB_SLAM/InertialOdometry/InertialOdometry.hpp>
-#include <MORB_SLAM/ExternalMapViewer.h>
+#include <MORB_SLAM/Viewers/Native/Viewer.h>
+#include <MORB_SLAM/Viewers/External/ExternalMapViewer.h>
 
 bool load_images(const std::filesystem::path &path_left_images, const std::filesystem::path &path_right_images, const std::filesystem::path &path_cam_csv,
                 std::vector<std::string> &v_str_image_left, std::vector<std::string> &v_str_image_right, std::vector<double> &v_timestamp_cam);

@@ -21,13 +21,15 @@
 
 #pragma once
 
-#include <mutex>
-#include <opencv2/opencv.hpp>
-#include <vector>
 #include "MORB_SLAM/ImprovedTypes.hpp"
 #include "MORB_SLAM/Atlas.h"
 #include "MORB_SLAM/Tracking.h"
 #include "MORB_SLAM/Packet.hpp"
+
+#include <opencv2/core/core.hpp>
+
+#include <mutex>
+#include <vector>
 
 namespace MORB_SLAM {
 

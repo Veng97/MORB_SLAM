@@ -20,9 +20,6 @@
  */
 
 #include "MORB_SLAM/TwoViewReconstruction.h"
-
-#include <thread>
-
 #include "MORB_SLAM/Converter.h"
 #include "MORB_SLAM/GeometricTools.h"
 
@@ -31,6 +28,9 @@
 #else
 #include "DUtils/Random.h"
 #endif
+
+#include <thread>
+#include <cmath>
 
 namespace MORB_SLAM {
 TwoViewReconstruction::TwoViewReconstruction(const Eigen::Matrix3f &k, float sigma, int iterations) {
@@ -754,7 +754,7 @@ int TwoViewReconstruction::CheckRT(const Eigen::Matrix3f &R, const Eigen::Vector
 
     GeometricTools::Triangulate(x_p1, x_p2, P1, P2, p3dC1);
 
-    if (!isfinite(p3dC1(0)) || !isfinite(p3dC1(1)) || !isfinite(p3dC1(2))) {
+    if (!std::isfinite(p3dC1(0)) || !std::isfinite(p3dC1(1)) || !std::isfinite(p3dC1(2))) {
       vbGood[vMatches12[i].first] = false;
       continue;
     }

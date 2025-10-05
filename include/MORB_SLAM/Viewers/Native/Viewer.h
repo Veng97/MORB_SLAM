@@ -21,15 +21,16 @@
 
 #pragma once
 
+#include "MORB_SLAM/Viewers/Native/FrameDrawer.h"
+#include "MORB_SLAM/Viewers/Native/MapDrawer.h"
+#include "MORB_SLAM/Tracking.h"
+#include "MORB_SLAM/ImprovedTypes.hpp"
+#include "MORB_SLAM/Packet.hpp"
+
 #include <mutex>
 #include <memory>
 #include <thread>
 
-#include "MORB_SLAM/Tracking.h"
-#include "MORB_SLAM/ImprovedTypes.hpp"
-#include "MORB_SLAM/FrameDrawer.h"
-#include "MORB_SLAM/MapDrawer.h"
-#include "MORB_SLAM/Packet.hpp"
 
 namespace MORB_SLAM {
 

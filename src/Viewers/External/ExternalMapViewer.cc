@@ -1,4 +1,4 @@
-#include <MORB_SLAM/ExternalMapViewer.h>
+#include <MORB_SLAM/Viewers/External/ExternalMapViewer.h>
 
 namespace MORB_SLAM {
 

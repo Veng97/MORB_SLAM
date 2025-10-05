@@ -5,6 +5,7 @@
 
 #include <opencv2/core/eigen.hpp>
 #include <opencv2/core/persistence.hpp>
+#include <opencv2/calib3d.hpp>
 
 namespace MORB_SLAM {
 

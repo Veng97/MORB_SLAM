@@ -18,9 +18,7 @@
 
 #pragma once
 
-#include <opencv2/opencv.hpp>
-#include <Eigen/Core>
-#include <unordered_set>
+#include "MORB_SLAM/Verbose.h"
 
 #ifdef FactoryEngine
 #include <apps/morb_sophus/se3.hpp>
@@ -28,7 +26,10 @@
 #include <sophus/se3.hpp>
 #endif
 
-#include "MORB_SLAM/Verbose.h"
+#include <opencv2/core/core.hpp>
+#include <Eigen/Core>
+
+#include <unordered_set>
 
 namespace MORB_SLAM
 {

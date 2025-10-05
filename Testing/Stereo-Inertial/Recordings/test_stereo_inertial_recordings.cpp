@@ -8,12 +8,14 @@
 #include <filesystem>
 
 #include <opencv2/core/core.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/videoio.hpp>
 
 #include <MORB_SLAM/System.h>
-#include <MORB_SLAM/Viewer.h>
 #include <MORB_SLAM/Settings/CameraSettings.hpp>
 #include <MORB_SLAM/Settings/SystemSettings.hpp>
 #include <MORB_SLAM/InertialOdometry/InertialOdometry.hpp>
+#include <MORB_SLAM/Viewers/Native/Viewer.h>
 
 
 bool load_images(const std::filesystem::path &path_left_images, const std::filesystem::path &path_right_images, const std::filesystem::path &path_cam_csv,

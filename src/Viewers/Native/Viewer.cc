@@ -19,20 +19,16 @@
  * ORB-SLAM3. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "MORB_SLAM/Viewer.h"
-
-#include <pangolin/pangolin.h>
-
+#include "MORB_SLAM/Viewers/Native/Viewer.h"
 #include "MORB_SLAM/ImprovedTypes.hpp"
-#include <chrono>
-#include <ctime>
-#include <mutex>
-#include <stdexcept>
-#include <iostream>
-#include <string>
 #include "MORB_SLAM/System.h"
 #include "MORB_SLAM/Atlas.h"
 #include "MORB_SLAM/Tracking.h"
+
+#include <pangolin/pangolin.h>
+#include <opencv2/highgui.hpp>
+
+#include <string>
 
 namespace MORB_SLAM {
 

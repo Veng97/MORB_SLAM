@@ -19,17 +19,18 @@
  * ORB-SLAM3. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "MORB_SLAM/MapDrawer.h"
-
-#include <pangolin/pangolin.h>
-
-#include <stdexcept>
-#include <mutex>
-
+#include "MORB_SLAM/Viewers/Native/MapDrawer.h"
 #include "MORB_SLAM/Atlas.h"
 #include "MORB_SLAM/KeyFrame.h"
 #include "MORB_SLAM/MapPoint.h"
 #include "MORB_SLAM/Settings/SystemSettings.hpp"
+
+#include <pangolin/pangolin.h>
+
+#include <mutex>
+#include <memory>
+#include <vector>
+
 
 namespace MORB_SLAM {
 

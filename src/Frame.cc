@@ -20,12 +20,8 @@
  */
 
 #include "MORB_SLAM/Frame.h"
-
 #include <MORB_SLAM/CameraModels/KannalaBrandt8.h>
 #include <MORB_SLAM/CameraModels/Pinhole.h>
-
-#include <thread>
-
 #include "MORB_SLAM/Converter.h"
 #include "MORB_SLAM/G2oTypes.h"
 #include "MORB_SLAM/CameraModels/GeometricCamera.h"
@@ -33,6 +29,10 @@
 #include "MORB_SLAM/MapPoint.h"
 #include "MORB_SLAM/ORBextractor.h"
 #include "MORB_SLAM/ORBmatcher.h"
+
+#include <opencv2/calib3d.hpp>
+
+#include <thread>
 
 namespace MORB_SLAM {
 

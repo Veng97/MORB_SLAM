@@ -21,10 +21,12 @@
 
 #pragma once
 
-#include <opencv2/opencv.hpp>
+#include "MORB_SLAM/KeyFrame.h"
+
+#include <opencv2/core/core.hpp>
+
 #include <vector>
 
-#include "MORB_SLAM/KeyFrame.h"
 
 namespace MORB_SLAM {
 

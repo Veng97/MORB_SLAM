@@ -22,8 +22,7 @@
 #include "MORB_SLAM/System.h"
 
 #include <openssl/evp.h>
-#include <opencv2/opencv.hpp>
-#include <pangolin/pangolin.h>
+#include <opencv2/core/core.hpp>
 
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>

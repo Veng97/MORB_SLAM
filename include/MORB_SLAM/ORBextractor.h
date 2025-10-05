@@ -21,9 +21,11 @@
 
 #pragma once
 
+#include <opencv2/core/core.hpp>
+
 #include <list>
-#include <opencv2/opencv.hpp>
 #include <vector>
+#include <map>
 
 namespace MORB_SLAM {
 

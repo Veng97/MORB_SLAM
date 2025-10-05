@@ -21,8 +21,6 @@
 
 #pragma once
 
-#include <math.h>
-
 #include "MORB_SLAM/ImprovedTypes.hpp"
 #include "MORB_SLAM/Frame.h"
 #include "MORB_SLAM/KeyFrame.h"
