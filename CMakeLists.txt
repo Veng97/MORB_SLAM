@@ -53,10 +53,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Default to Release if not explicitly set
 if(NOT CMAKE_BUILD_TYPE)
-    message(STATUS "No build type specified; defaulting to Release")
-    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+    message(STATUS "No build type specified; defaulting to RelWithDebInfo")
+    set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Build type" FORCE)
 endif()
-
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -gdwarf-4")
+elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -gdwarf-4")
+endif()
 
 # https://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -107,7 +111,7 @@ find_package(Eigen3 REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(Boost REQUIRED COMPONENTS serialization regex)
 find_package(Boost REQUIRED)
-find_package(OpenSSL REQUIRED)
+find_package(OpenSSL REQUIRED) # TODO: Do we need this dependency?
 find_package(Pangolin QUIET) # only needed for visualization
 find_package(ixwebsocket QUIET) # only needed for getting realsense data through a websocket
 find_package(realsense2 QUIET) # realsense only needed for example
@@ -187,10 +191,6 @@ if(EXTERNAL_VIEWER_LIBS)
     target_link_libraries( ${TARGET_NAME} PRIVATE ${EXTERNAL_VIEWER_LIBS} )
 endif()
 
-target_compile_options(${TARGET_NAME} PRIVATE
-    $<$<CONFIG:Debug>:-g -gdwarf-4>
-    $<$<CONFIG:RelWithDebInfo>:-g -gdwarf-4>
-)
 
 target_precompile_headers(${TARGET_NAME} PRIVATE
     <Eigen/Core>
