@@ -195,14 +195,8 @@ endif()
 target_precompile_headers(${TARGET_NAME} PRIVATE
     <Eigen/Core>
     <Eigen/Dense>
-    <Eigen/Sparse>
     <Eigen/Geometry>
-    <Eigen/StdVector>
     <opencv2/core/core.hpp>
-    <opencv2/features2d/features2d.hpp>
-    <opencv2/imgproc/imgproc.hpp>
-    <opencv2/calib3d.hpp>
-    <opencv2/highgui/highgui.hpp>
 )
 
 
