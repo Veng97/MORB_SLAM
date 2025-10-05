@@ -111,7 +111,6 @@ find_package(Eigen3 REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(Boost REQUIRED COMPONENTS serialization regex)
 find_package(Boost REQUIRED)
-find_package(OpenSSL REQUIRED) # TODO: Do we need this dependency?
 find_package(Pangolin QUIET) # only needed for visualization
 find_package(ixwebsocket QUIET) # only needed for getting realsense data through a websocket
 find_package(realsense2 QUIET) # realsense only needed for example
@@ -183,7 +182,6 @@ target_link_libraries( ${TARGET_NAME} PUBLIC Threads::Threads )
 target_link_libraries( ${TARGET_NAME} PUBLIC Eigen3::Eigen )
 target_link_libraries( ${TARGET_NAME} PUBLIC Boost::serialization Boost::regex )
 target_link_libraries( ${TARGET_NAME} PUBLIC ${OpenCV_LIBS} )
-target_link_libraries( ${TARGET_NAME} PRIVATE OpenSSL::SSL )
 if(NATIVE_VIEWER_LIBS)
     target_link_libraries( ${TARGET_NAME} PRIVATE ${NATIVE_VIEWER_LIBS} )
 endif()
