@@ -30,7 +30,7 @@ ExternalMapViewer::ExternalMapViewer(const std::string& _serverAddress, const in
         mServer.start();
         
         Verbose::Log(Verbose::DEBUG, "Creating ExternalMapViewer thread");
-        threadEMV = std::jthread(&ExternalMapViewer::run, this);
+        threadEMV = std::jthread([this](std::stop_token stop_token){ this->run(stop_token); });
 
         Verbose::Log(Verbose::INFO, "Waiting for at least one client to connect to the ExternalMapViewer socket server before continuing...");
         while(!mbFirstClientConnected)

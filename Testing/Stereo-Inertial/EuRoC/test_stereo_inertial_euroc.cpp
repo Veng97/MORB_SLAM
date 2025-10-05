@@ -27,6 +27,8 @@
 #include <csignal>
 
 #include <opencv2/core/core.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/videoio.hpp>
 
 #include <MORB_SLAM/System.h>
 #include <MORB_SLAM/Settings/CameraSettings.hpp>
