@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <string>
 #include <thread>
+
 #include <opencv2/core/core.hpp>
 
 #include "MORB_SLAM/ImprovedTypes.hpp"
@@ -102,7 +103,8 @@ class System {
     bool getHasMergedLocalMap();
     bool getIsDoneBA();
     
-    std::vector<std::shared_ptr<MapPoint>> getAllMapPoints();
+    const std::vector<std::shared_ptr<MapPoint>>& getCurrentMapPoints() const;
+    const std::vector<cv::KeyPoint>& getCurrentKeyPoints() const;
 
     std::shared_ptr<SystemSettings> getSysSettings() const;
     std::shared_ptr<CameraSettings> getCamSettings() const;

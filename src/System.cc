@@ -453,8 +453,12 @@ bool System::getIsDoneBA() {
   return mpLocalMapper->getIsDoneBA();
 }
 
-std::vector<std::shared_ptr<MapPoint>> System::getAllMapPoints() {
-  return mpAtlas->GetAllMapPoints();
+const std::vector<std::shared_ptr<MapPoint>>& System::getCurrentMapPoints() const {
+  return mpTracker->mCurrentFrame.mvpMapPoints;
+}
+
+const std::vector<cv::KeyPoint>& System::getCurrentKeyPoints() const {
+  return mpTracker->mCurrentFrame.mvKeysUn;
 }
 
 std::shared_ptr<SystemSettings> System::getSysSettings() const { return mpSysSettings; }
