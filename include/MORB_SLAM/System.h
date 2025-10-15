@@ -101,6 +101,8 @@ class System {
 
     bool getHasMergedLocalMap();
     bool getIsDoneBA();
+    
+    std::vector<std::shared_ptr<MapPoint>> getAllMapPoints();
 
     std::shared_ptr<SystemSettings> getSysSettings() const;
     std::shared_ptr<CameraSettings> getCamSettings() const;
